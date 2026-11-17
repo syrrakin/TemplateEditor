@@ -1,19 +1,16 @@
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
-using OntoScope.Models;
 using OntoScope.Services;
 using OntoScope.ViewModels;
 
-namespace OntoScope;
+namespace OntoScope.Views;
 
 public partial class MainWindow : Window
 {
-    private readonly MainViewModel _viewModel = new();
-    private readonly OwlOntologyLoader _loader = new();
+    private readonly MainViewModel _viewModel = new(new OwlOntologyLoader());
 
     public MainWindow()
     {
@@ -27,7 +24,7 @@ public partial class MainWindow : Window
         {
             Graph.FitToView();
             var arguments = Environment.GetCommandLineArgs();
-            if (arguments.Length > 1 && File.Exists(arguments[1]))
+            if (arguments.Length > 1)
             {
                 await LoadFile(arguments[1]);
             }
@@ -52,21 +49,18 @@ public partial class MainWindow : Window
     private async Task LoadFile(string fileName)
     {
         OpenButton.IsEnabled = false;
-        _viewModel.StatusText = "Загрузка и разбор онтологии…";
         try
         {
-            var document = await Task.Run(() => _loader.Load(fileName));
-            _viewModel.Load(document);
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException)
-        {
-            _viewModel.StatusText = "Не удалось загрузить OWL-файл";
-            MessageBox.Show(
-                this,
-                exception.Message,
-                "Ошибка открытия онтологии",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+            await _viewModel.LoadFileCommand.ExecuteAsync(fileName);
+            if (_viewModel.ErrorMessage is not null)
+            {
+                MessageBox.Show(
+                    this,
+                    _viewModel.ErrorMessage,
+                    "Ошибка открытия онтологии",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
         finally
         {

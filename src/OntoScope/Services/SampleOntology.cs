@@ -80,12 +80,12 @@ public static class SampleOntology
         string target,
         string label,
         OntologyRelationKind kind = OntologyRelationKind.Inheritance) => new()
-    {
-        SourceId = source,
-        TargetId = target,
-        Label = label,
-        Kind = kind
-    };
+        {
+            SourceId = source,
+            TargetId = target,
+            Label = label,
+            Kind = kind
+        };
 
     private static OntologyProperty Property(
         string id,
@@ -93,11 +93,11 @@ public static class SampleOntology
         string domain,
         string range,
         string kind = "Object property") => new()
-    {
-        Name = name,
-        Uri = Namespace + id,
-        Kind = kind,
-        Domain = domain,
-        Range = range
-    };
+        {
+            Name = name,
+            Uri = Namespace + id,
+            Kind = kind,
+            Domain = domain,
+            Range = range
+        };
 }

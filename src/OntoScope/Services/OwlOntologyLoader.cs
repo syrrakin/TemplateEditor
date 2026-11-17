@@ -6,7 +6,7 @@ using OntoScope.Models;
 
 namespace OntoScope.Services;
 
-public sealed class OwlOntologyLoader
+public sealed class OwlOntologyLoader : IOntologyLoader
 {
     private static readonly XNamespace Owl = "http://www.w3.org/2002/07/owl#";
     private static readonly XNamespace Rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
@@ -36,6 +36,9 @@ public sealed class OwlOntologyLoader
             throw new InvalidDataException("Не удалось прочитать RDF/XML. Проверьте структуру OWL-файла.", exception);
         }
     }
+
+    public Task<OntologyDocument> LoadAsync(string path, CancellationToken cancellationToken = default) =>
+        Task.Run(() => Load(path), cancellationToken);
 
     private static OntologyDocument Parse(XDocument document, string path)
     {
